@@ -11,7 +11,7 @@ app.use(expressip().getIpInfoMiddleware);
 
 app.use((req, res, next) => {
   // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
 
   // Request methods you wish to allow
   res.setHeader(
@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   // Request headers you wish to allow
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-Requested-With,content-type'
+    'X-Requested-With,content-type,X-Auth-Code'
   );
 
   // Set to true if you need the website to include cookies in the requests sent
