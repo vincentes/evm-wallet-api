@@ -12,7 +12,7 @@ const checkIfWhitelistedIp = async (req, res, next) => {
   } else {
     console.log(`Middleware [ValidateIPs]: Bad IP ${ip}`);
 
-    res.status(401).send('Address not whitelisted');
+    res.status(401).json({ message: 'Address not whitelisted' });
   }
 };
 
