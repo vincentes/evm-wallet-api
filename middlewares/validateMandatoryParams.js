@@ -1,23 +1,21 @@
 const validateMandatoryParams = async (req, res, next) => {
-  const { requestId } = req.body;
-  const userId = req.body.requestId;
-  const { serverDateTime } = req.body;
+  const { ServerDateTime, UserID, RequestID } = req.body;
 
-  if (!requestId || !userId || !serverDateTime) {
+  if (!RequestID || !UserID || !ServerDateTime) {
     let missingParam = '';
-    if (!requestId) {
+    if (!RequestID) {
       missingParam = 'RequestID';
     }
 
-    if (!userId) {
+    if (!UserID) {
       missingParam = 'UserID';
     }
 
-    if (!serverDateTime) {
+    if (!ServerDateTime) {
       missingParam = 'ServerDateTime';
     }
 
-    res.status(400).json({ message: `Missing ${missingParam} parameter.` });
+    res.status(400).json({ msg: `Invalid ${missingParam}` });
   } else {
     next();
   }
