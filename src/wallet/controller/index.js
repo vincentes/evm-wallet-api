@@ -6,8 +6,6 @@ module.exports.createWallet = async (res, parameters) => {
   const { UserID, Data } = parameters;
   const { TokenName, Network } = Data;
 
-  console.log(UserID);
-
   const rpc = config.RPCS[TokenName];
   const wallet = new EthereumWallet(rpc);
   await wallet.init();
