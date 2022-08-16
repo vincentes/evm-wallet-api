@@ -11,28 +11,29 @@ module.exports.createWallet = async (res, parameters) => {
   await wallet.init();
 
   const seed = wallet.generateSeed();
-  /**
-   * TODO: Figure out how to handle the passwords
-   */
-  const password = 'sample-password';
-  await wallet.createKeystore(password, seed);
-  await wallet.unlock(password);
+  await wallet.createKeystore(process.env.WALLET_PASSWORD, seed);
+  await wallet.unlock(process.env.WALLET_PASSWORD);
   const address = await wallet.getNewAddress();
   const privKey = wallet.dumpPrivKey(address);
-
-  db.sequelize.models.Wallet.create({
+  const baseObj = {
     UserID,
     Address: address,
     Network,
     TokenName,
+  };
+
+  const [, created] = await db.sequelize.models.Wallet.findOrCreate({
+    where: { UserID, Network, TokenName },
+    defaults: baseObj,
   });
 
-  return res.status(200).json({
-    UserID,
-    TokenName,
-    Network,
-    Address: address,
-    PrivateKey: privKey,
-    Seed: seed,
-  });
+  if (created) {
+    return res.status(200).json({
+      ...baseObj,
+      PrivateKey: privKey,
+      Seed: seed,
+    });
+  }
+
+  return res.status(200).json(baseObj);
 };
