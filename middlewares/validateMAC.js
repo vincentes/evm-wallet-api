@@ -20,6 +20,8 @@ const checkIfHasMAC = async (req, res, next) => {
     .update(key1 + key2MD5)
     .digest('hex');
 
+  console.log(MAC);
+
   if (code === MAC) {
     next();
   } else {

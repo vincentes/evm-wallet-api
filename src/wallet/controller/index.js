@@ -1,3 +1,4 @@
+const { generateAccount } = require('tron-create-address');
 const EthereumWallet = require('node-ethereum-wallet');
 const config = require('../../../config');
 const db = require('../models');
@@ -13,8 +14,15 @@ module.exports.createWallet = async (res, parameters) => {
   const seed = wallet.generateSeed();
   await wallet.createKeystore(process.env.WALLET_PASSWORD, seed);
   await wallet.unlock(process.env.WALLET_PASSWORD);
-  const address = await wallet.getNewAddress();
-  const privKey = wallet.dumpPrivKey(address);
+  let address;
+  let privKey;
+  if (Network === 'TRC20') {
+    ({ address, privKey } = generateAccount());
+  } else {
+    address = await wallet.getNewAddress();
+    privKey = wallet.dumpPrivKey(address);
+  }
+
   const baseObj = {
     UserID,
     Address: address,

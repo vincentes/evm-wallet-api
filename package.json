@@ -45,6 +45,7 @@
     "express-ip": "^1.0.4",
     "node-ethereum-wallet": "^1.4.3",
     "sequelize": "^6.21.3",
+    "tron-create-address": "^0.1.10",
     "uninstall": "*"
   },
   "devDependencies": {
