@@ -17,7 +17,9 @@ module.exports.createWallet = async (res, parameters) => {
   let address;
   let privKey;
   if (Network === 'TRC20') {
-    ({ address, privKey } = generateAccount());
+    const obj = generateAccount();
+    address = obj.address;
+    privKey = obj.privateKey;
   } else {
     address = await wallet.getNewAddress();
     privKey = wallet.dumpPrivKey(address);
