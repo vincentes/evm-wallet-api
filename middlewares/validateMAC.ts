@@ -1,6 +1,6 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
-const checkIfHasMAC = async (req, res, next) => {
+const checkIfHasMAC = async (req : any, res : any, next : any) => {
   const code = req.headers['x-auth-code'] || null;
   if (code === null) {
     res.status(400).send('X-Auth-Code is required');
@@ -29,4 +29,4 @@ const checkIfHasMAC = async (req, res, next) => {
   }
 };
 
-module.exports = { checkIfHasMAC };
+export default checkIfHasMAC;

@@ -1,4 +1,6 @@
-const validateMandatoryParams = async (req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+const validateMandatoryParams = async (req : Request, res : Response, next : NextFunction) => {
   const { ServerDateTime, UserID, RequestID } = req.body;
 
   if (!RequestID || !UserID || !ServerDateTime) {
@@ -21,4 +23,4 @@ const validateMandatoryParams = async (req, res, next) => {
   }
 };
 
-module.exports = { validateMandatoryParams };
+export default validateMandatoryParams;

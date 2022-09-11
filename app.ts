@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(expressip().getIpInfoMiddleware);
 
-app.use((req, res, next) => {
+app.use((req : any, res : any, next : any) => {
   // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
 
@@ -35,4 +35,4 @@ app.use((req, res, next) => {
 
 require('./routes')(app);
 
-module.exports = app;
+export default app;

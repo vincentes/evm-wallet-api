@@ -37,4 +37,4 @@ db.sequelize.define(
   }
 );
 
-module.exports = db;
+export default db;

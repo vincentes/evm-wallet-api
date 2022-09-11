@@ -1,4 +1,6 @@
-const validateContentType = async (req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+const validateContentType = async (req : Request, res : Response, next : NextFunction) => {
   const contentType = req.headers['content-type'] || null;
   if (!contentType || !req.body) {
     res.status(400).json({
@@ -9,4 +11,4 @@ const validateContentType = async (req, res, next) => {
   }
 };
 
-module.exports = { validateContentType };
+export default validateContentType;
