@@ -1,5 +1,5 @@
 import { Network, TokenType } from "../constants/constants";
-import transform from "../utils/transform";
+import { transform } from "../utils/transform";
 import { Tron } from "./tron/init";
 
 export async function getBalance(tokenType : TokenType, targetAddress : string) {

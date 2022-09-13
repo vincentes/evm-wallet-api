@@ -5,6 +5,7 @@ import { generateAccount } from 'tron-create-address';
 const EthereumWallet = require('node-ethereum-wallet');
 import config from '../../../config';
 import db from '../models';
+import { isSupportedNetwork, isSupportedToken } from "../../../utils/transform";
 
 export const createWallet = async (res : Response, parameters : any) => {
   const { UserID, Data } = parameters;
@@ -56,9 +57,19 @@ export const createWallet = async (res : Response, parameters : any) => {
 export const balance = async (res : Response, parameters : any) => {
   const { Data } = parameters;
   const { TokenName, Network, Address } = Data;
+  if (!isSupportedNetwork(Network)) {
+    return res.status(400).json({
+      Error: "Invalid Network"
+    });
+  }
+
+  if (!isSupportedToken(Network, TokenName)) {
+    return res.status(400).json({
+      Error: "Invalid Token"
+    });
+  }
 
   const balance = await getBalance(Network, TokenName, Address);
-
   return res.status(200).json({
     TokenName,
     Network,

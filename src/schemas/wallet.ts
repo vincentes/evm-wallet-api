@@ -14,7 +14,7 @@ export const createWallet = Joi.object().keys({
 
 export const balance = Joi.object().keys({
   RequestID: Joi.string().required(),
-  UserID: Joi.string().required(),
+  UserID: Joi.string().max(32).required(),
   Data: Joi.object({
     TokenName: Joi.string().required(),
     Network: Joi.string().required(),

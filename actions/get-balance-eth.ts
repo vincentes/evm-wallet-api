@@ -1,5 +1,5 @@
 import { Network, TokenType } from "../constants/constants";
-import transform from "../utils/transform";
+import { transform, isSupportedToken } from "../utils/transform";
 import { web3 } from "./eth/init";
 
 
@@ -12,7 +12,7 @@ const minABI : any = [
         type: "function",
     }];
 
-export async function getBalance(tokenType : TokenType, targetAddress : string) {
+export async function getBalance(tokenType: TokenType, targetAddress: string) {
     const tokenAddress = transform(Network.ERC20, tokenType);
     const contract = new web3.eth.Contract(minABI, tokenAddress);
     const res = await contract.methods.balanceOf(targetAddress).call();
