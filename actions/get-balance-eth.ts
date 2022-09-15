@@ -12,8 +12,8 @@ const minABI : any = [
         type: "function",
     }];
 
-export async function getBalance(tokenType: TokenType, targetAddress: string) {
-    const tokenAddress = transform(Network.ERC20, tokenType);
+export async function getBalance(network : Network, tokenType: TokenType, targetAddress: string) {
+    const tokenAddress = transform(network, tokenType);
     const contract = new web3.eth.Contract(minABI, tokenAddress);
     const res = await contract.methods.balanceOf(targetAddress).call();
     return res.toString();
