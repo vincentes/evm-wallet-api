@@ -18,11 +18,13 @@ const Map : NetworkTokenMap = {
         USDT: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
     },
     ERC20: {
-        USDT: '0xdac17f958d2ee523a2206206994597c13d831ec7'
+        USDT: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        IDRT: '0x998FFE1E43fAcffb941dc337dD0468d52bA5b48A'
     },
     BEP20: {
         DAI: '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3',
-        IDRT: '0x998FFE1E43fAcffb941dc337dD0468d52bA5b48A'
+        IDRT: '0x66207e39bb77e6b99aab56795c7c340c08520d83',
+        USDT: '0x55d398326f99059ff775485246999027b3197955'
     }
 }
 
