@@ -40,6 +40,7 @@ export function transform(network: Network, tokenType: TokenType) {
     console.log(tokenType);
     
     if (isSupportedToken(network, tokenType)) {
+        console.log(Map[network][tokenType]);
         return Map[network][tokenType];        
     }
 
