@@ -13,6 +13,5 @@ const config : any = {
   },
 };
 
-console.log("config", config);
 
 export default config;
