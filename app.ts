@@ -1,3 +1,4 @@
+const io = require('@pm2/io')
 const express = require('express');
 const bodyParser = require('body-parser');
 const expressip = require('express-ip');
@@ -32,6 +33,8 @@ app.use((req : any, res : any, next : any) => {
   // Pass to next layer of middleware
   next();
 });
+
+app.use(io.expressErrorHandler())
 
 require('./routes')(app);
 
