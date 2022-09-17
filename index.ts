@@ -9,4 +9,4 @@ import config from './config';
 const PORT = process.env.PORT || config.port;
 const server = app.listen(PORT, () => {});
 
-module.exports = server;
+export default server;
