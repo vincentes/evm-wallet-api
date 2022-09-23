@@ -25,7 +25,23 @@ export const balance = Joi.object().keys({
 })
   .meta({ className: 'BalanceDTO' });
 
+
+export const withdrawal = Joi.object().keys({
+  RequestID: Joi.string().required(),
+  UserID: Joi.string().max(32).required(),
+  Data: Joi.object({
+    TokenName: Joi.string().required(),
+    Network: Joi.string().required(),
+    Address: Joi.string().required(),
+    Amount: Joi.string().required()
+  })
+    .required(),
+  ServerDateTime: Joi.date().required(),
+})
+  .meta({ className: 'BalanceDTO' });
+
 export default {
   balance,
   createWallet,
+  withdrawal
 }

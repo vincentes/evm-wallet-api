@@ -6,6 +6,7 @@ const EthereumWallet = require('node-ethereum-wallet');
 import config from '../../../config';
 import db from '../models';
 import { isSupportedNetwork, isSupportedToken } from "../../../utils/transform";
+import Moralis from "moralis-v1/node";
 
 export const createWallet = async (res : Response, parameters : any) => {
   const { UserID, Data } = parameters;

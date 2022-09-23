@@ -13,4 +13,3 @@ export function getWeb3(network: Network) {
 
     return new Web3(new Web3.providers.HttpProvider(rpcUrl));
 }
-

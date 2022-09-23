@@ -46,6 +46,7 @@
     "express": "^4.17.1",
     "express-ip": "^1.0.4",
     "joi": "^17.6.0",
+    "moralis-v1": "^1.11.0",
     "node-ethereum-wallet": "^1.4.3",
     "sequelize": "^6.21.3",
     "tron-create-address": "^0.1.10",
