@@ -1,16 +1,16 @@
 import { Response } from "express";
+import { getGasPrice } from "../../../actions/gas-price";
 
-import { transfer } from "../../../actions/transfer";
 import { getErrorMessage, reportError } from "../../../utils/error";
 
-export const withdraw = async (res : Response, parameters : any) => {
+export const gasPrice = async (res : Response, parameters : any) => {
   const { Data } = parameters;
   const { TokenName, Network, Amount, Address } = Data;
 
   try {
-    const tx = await transfer(Network, TokenName, Address, Amount);
+    const tx = await getGasPrice(Network, TokenName, Address, Amount);
     return res.status(200).json({
-      hash: tx,
+      ...tx,
       msg: "OK"
     });
   } catch (error) {
@@ -23,5 +23,5 @@ export const withdraw = async (res : Response, parameters : any) => {
 };
 
 export default {
-  withdraw
+  gasPrice
 }

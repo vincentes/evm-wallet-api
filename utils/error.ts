@@ -3,6 +3,6 @@ export function getErrorMessage(error: unknown) {
     return String(error)
 }
 
-export const reportError = ({ message }: { message: string }) => {
-  console.log(message);
+export const reportError = (error : any) => {
+  console.log(error);
 }

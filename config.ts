@@ -25,7 +25,7 @@ const config : any = {
     TRC20: {
       USDT: {
         address: 'TTpJFsE1xPRvqoJok2xCFACdTPmcg7yhx1',
-        privateKey: process.env.TRC20_IDRT_STORE
+        privateKey: process.env.TRC20_USDT_STORE
       }
     },
     ERC20: {

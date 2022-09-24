@@ -1,6 +1,7 @@
 import { Network, TokenType } from "../constants/constants";
+import { TronFeeAction } from "../enum/actions";
 import { transform } from "../utils/transform";
-import { Tron } from "./tron/init";
+import { getTronWalletInterface, Sdk, Tron } from "./tron/init";
 
 export async function getBalance(tokenType : TokenType, targetAddress : string) {
     const tokenAddress = transform(Network.TRC20, tokenType);
@@ -13,3 +14,5 @@ export async function getBalance(tokenType : TokenType, targetAddress : string) 
         console.error(error);
     }
 }
+
+

@@ -1,6 +1,4 @@
 import { Network, TokenType } from "../constants/constants";
-import { Priority } from "../enum/priority";
-import { getPreferredGasPrice } from "../utils/gas";
 import { transform } from "../utils/transform";
 import { getWeb3 } from "./eth/init";
 
@@ -31,33 +29,26 @@ const minABI : any = [
       }
 ];
 
-export async function transfer(network: Network, tokenType : TokenType, targetAddress : string, amount : string, privateKey : string, priority : Priority) {
+export async function getGasPrice(network: Network, tokenType : TokenType, targetAddress : string, amount : string, privateKey : string) {
     const web3 = getWeb3(network);
     let tokenAddress;
     try {
         tokenAddress = transform(network, tokenType);
     } catch (error) {
-        return 0;
+      return {};
     }
 
     const contract = new web3.eth.Contract(minABI, tokenAddress);
     const account = web3.eth.accounts.privateKeyToAccount(privateKey);
     const tx = contract.methods.transfer(targetAddress, amount);
+  
+    const gas = await tx.estimateGas({ from: account.address });
+    const gasPrice = await web3.eth.getGasPrice();
+    const cost = web3.utils.toBN(gasPrice).mul(web3.utils.toBN(gas));
 
-    const options = {
-        to: tokenAddress,
-        data: tx.encodeABI(),
-        gas: await getPreferredGasPrice(network, tokenType, priority),
-        gasPrice: await web3.eth.getGasPrice()
+    return {
+      Low: web3.utils.fromWei(cost.muln(0.8)),
+      Medium: web3.utils.fromWei(cost),
+      High: web3.utils.fromWei(cost.muln(1.2))
     };
-
-    const signed = await web3.eth.accounts.signTransaction(options, privateKey);
-    if (signed.rawTransaction) {
-      web3.eth.sendSignedTransaction(signed.rawTransaction);
-      return signed.transactionHash;  
-    }
-
-    return null;
-}
-
-
+  }
