@@ -9,7 +9,7 @@ import schemas from '../schemas/wallet';
 const router = express.Router();
 
 router.post(
-  '/transfer',
+  '/',
   validateSchemas.inputs(schemas.gasEstimate, 'body'),
   (req: Request, res: Response) => {
     controller.gasPrice(res, req.body);

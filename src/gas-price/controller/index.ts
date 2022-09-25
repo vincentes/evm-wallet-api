@@ -10,8 +10,12 @@ export const gasPrice = async (res : Response, parameters : any) => {
   try {
     const tx = await getGasPrice(Network, TokenName, Address, Amount);
     return res.status(200).json({
-      ...tx,
-      msg: "OK"
+      Amount,
+      TokenName,
+      Network,
+      GasFee: {
+        ...tx,
+      }
     });
   } catch (error) {
     const message = getErrorMessage(error);

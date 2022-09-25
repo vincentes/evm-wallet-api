@@ -1,7 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import config from '../config';
 
-const checkIfWhitelistedIp = async (req : Request, res : Response, next : NextFunction) => {
+const checkIfWhitelistedIp = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.url === "/api/v1/gasfee") {
+    next();
+    return;
+  }
+  
   let ip = req.socket.remoteAddress || null;
   if (ip && ip.substr(0, 7) === '::ffff:') {
     ip = ip.substr(7);

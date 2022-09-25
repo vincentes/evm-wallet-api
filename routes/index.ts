@@ -17,7 +17,7 @@ module.exports = (app : any) => {
   app.use('/api/v1/failure', failure);
   app.use('/api/v1/wallet', wallet);
   app.use('/api/v1/transfer', transfer);
-  app.use('/api/v1/estimate', estimate);
+  app.use('/api/v1/gasfee', estimate);
   app.use('*', (req : Request, res : Response) => {
     res.status(404).send('Resource not found.');
   });

@@ -9,7 +9,7 @@ export async function getGasPrice(network: Network, tokenType: TokenType, target
     console.log("storage", storage);
     if (network === Network.TRC20) {
         return {
-            Estimate: await tron.getGasPrice(network, tokenType, targetAddress, amount, storage.privateKey)
+            Energy: await tron.getGasPrice(network, tokenType, targetAddress, amount, storage.privateKey)
         }
     } else {
         return await eth.getGasPrice(network, tokenType, targetAddress, amount, storage.privateKey);
