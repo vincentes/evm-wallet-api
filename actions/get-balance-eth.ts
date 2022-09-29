@@ -26,7 +26,8 @@ const minABI: any = [
 ];
 
 export async function getBalance(network: Network, tokenType: TokenType, targetAddress: string) {
-  return getBalanceBN(network, tokenType, targetAddress).toString();
+  const balance = await getBalanceBN(network, tokenType, targetAddress);
+  return balance.toString();
 }
 
 
