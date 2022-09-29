@@ -2,60 +2,64 @@ import { Response } from "express";
 import { getBalance } from "../../../actions/get-balance";
 
 import { generateAccount } from 'tron-create-address';
-const EthereumWallet = require('node-ethereum-wallet');
 import config from '../../../config';
 import db from '../models';
 import { isSupportedNetwork, isSupportedToken } from "../../../utils/transform";
-import Moralis from "moralis-v1/node";
+import { ApproHotWallet } from "../../../actions/wallet-create-eth";
+import { TronHotWallet } from "../../../actions/wallet-create-tron";
 
-export const createWallet = async (res : Response, parameters : any) => {
+const uhw = new ApproHotWallet();
+const thw = new TronHotWallet();
+
+export const createWallet = async (res: Response, parameters: any) => {
   const { UserID, Data } = parameters;
   const { TokenName, Network } = Data;
 
-  const rpc : any = config.RPCS[TokenName];
-  const wallet = new EthereumWallet(rpc);
-  await wallet.init();
-
-  const seed = wallet.generateSeed();
-  await wallet.createKeystore(process.env.WALLET_PASSWORD, seed);
-  await wallet.unlock(process.env.WALLET_PASSWORD);
-  let address : string;
-  let privKey : string;
+  let address: string;
+  let privKey: string;
   if (Network === 'TRC20') {
-    const obj = generateAccount();
-    address = obj.address;
-    privKey = obj.privateKey;
+    const wallet: any = await thw.generateHotWallet();
+    address = wallet.address;
+    privKey = wallet.privateKey;
   } else {
-    address = await wallet.getNewAddress();
-    privKey = wallet.dumpPrivKey(address);
+    const wallet: any = await uhw.generateHotWallet();
+    address = wallet.address;
+    privKey = wallet.privateKey;
   }
 
   const baseObj = {
     UserID,
-    Address: address,
     Network,
     TokenName,
+    Address: address
   };
 
-  const [, created] = await db.sequelize.models.Wallet.findOrCreate({
+  const [row, created] = await db.sequelize.models.Wallet.findOrCreate({
     where: { UserID, Network, TokenName },
-    defaults: baseObj,
+    defaults: {
+      ...baseObj
+    },
   });
 
   if (created) {
     return res.status(200).json({
       ...baseObj,
-      PrivateKey: privKey,
-      Seed: seed,
+      Address: address,
+      PrivateKey: privKey
     });
   }
 
-  return res.status(200).json(baseObj);
+  return res.status(200).json({
+    Address: row.Address,
+    Network: row.Network,
+    TokenName: row.TokenName,
+    UserID: row.UserID
+  });
 };
 
 
 
-export const balance = async (res : Response, parameters : any) => {
+export const balance = async (res: Response, parameters: any) => {
   const { Data } = parameters;
   const { TokenName, Network, Address } = Data;
   if (!isSupportedNetwork(Network)) {

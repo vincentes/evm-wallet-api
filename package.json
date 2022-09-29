@@ -37,6 +37,7 @@
   "license": "ISC",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@metamask/eth-hd-keyring": "^4.0.2",
     "@pm2/io": "^5.0.0",
     "@types/sequelize": "^4.28.14",
     "api": "^4.5.2",
@@ -44,15 +45,16 @@
     "body-parser": "*",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
+    "eth-hd-keyring": "^3.6.0",
     "express": "^4.17.1",
     "express-ip": "^1.0.4",
     "joi": "^17.6.0",
     "moralis-v1": "^1.11.0",
-    "node-ethereum-wallet": "^1.4.3",
     "sequelize": "^6.21.3",
     "tron-create-address": "^0.1.10",
     "tronweb": "^4.3.0",
-    "uninstall": "*"
+    "uninstall": "*",
+    "web3": "^1.8.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

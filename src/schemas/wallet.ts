@@ -32,9 +32,10 @@ export const withdrawal = Joi.object().keys({
   Data: Joi.object({
     TokenName: Joi.string().required(),
     Network: Joi.string().required(),
-    Address: Joi.string().required(),
-    Amount: Joi.string().required(),
-    Priority: Joi.number().valid(0, 1, 2).required()
+    FromAddress: Joi.string().required(),
+    TargetAddress: Joi.string().required(),
+    Priority: Joi.string().valid("0", "1", "2").optional().default("1"),
+    Amount: Joi.number().required(),
   })
     .required(),
   ServerDateTime: Joi.date().required(),

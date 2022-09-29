@@ -1,17 +1,18 @@
 import { Response } from "express";
+import { getBalanceBN } from "../../../actions/get-balance-eth";
 
 import { transfer } from "../../../actions/transfer";
 import { getErrorMessage, reportError } from "../../../utils/error";
 
-export const withdraw = async (res : Response, parameters : any) => {
+export const withdraw = async (res: Response, parameters: any) => {
   const { Data } = parameters;
-  const { TokenName, Network, Amount, Address } = Data;
+  const { TokenName, Network, Amount, FromAddress, TargetAddress, Priority } = Data;
 
   try {
-    const tx = await transfer(Network, TokenName, Address, Amount);
+    const tx = await transfer(Network, TokenName, FromAddress, TargetAddress, Amount, Priority);
     return res.status(200).json({
-      hash: tx,
-      msg: "OK"
+      TxHash: tx,
+      Status: "Confirmed"
     });
   } catch (error) {
     const message = getErrorMessage(error);

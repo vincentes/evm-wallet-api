@@ -1,5 +1,3 @@
-import { NextFunction, Request, Response } from "express";
-
 const inputs = (schema : any, property : any) => {
   return (req : any, res : any, next : any) => {
     const { error } : any = schema.validate(req[property]);

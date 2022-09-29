@@ -1,6 +1,6 @@
 import { Network, TokenType } from "../constants/constants";
 import { Priority } from "../enum/priority";
-import { getPreferredGasPrice } from "../utils/gas";
+import { getPreferredGasPrice, getPreferredGasPriceWei } from "../utils/gas";
 import { transform } from "../utils/transform";
 import { getWeb3 } from "./eth/init";
 
@@ -43,12 +43,12 @@ export async function transfer(network: Network, tokenType : TokenType, targetAd
     const contract = new web3.eth.Contract(minABI, tokenAddress);
     const account = web3.eth.accounts.privateKeyToAccount(privateKey);
     const tx = contract.methods.transfer(targetAddress, amount);
-
+  
     const options = {
         to: tokenAddress,
         data: tx.encodeABI(),
-        gas: await getPreferredGasPrice(network, tokenType, priority),
-        gasPrice: await web3.eth.getGasPrice()
+        gas: await tx.estimateGas({from: account.address}),
+        gasPrice: await getPreferredGasPriceWei(network, tokenType, priority)
     };
 
     const signed = await web3.eth.accounts.signTransaction(options, privateKey);
@@ -56,7 +56,7 @@ export async function transfer(network: Network, tokenType : TokenType, targetAd
       web3.eth.sendSignedTransaction(signed.rawTransaction);
       return signed.transactionHash;  
     }
-
+  
     return null;
 }
 
