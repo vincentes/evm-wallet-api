@@ -44,6 +44,7 @@
     "bcrypt": "^5.0.0",
     "body-parser": "*",
     "cors": "^2.8.5",
+    "crypto-convert": "^1.1.6",
     "dotenv": "^16.0.1",
     "eth-hd-keyring": "^3.6.0",
     "express": "^4.17.1",

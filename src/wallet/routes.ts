@@ -12,7 +12,7 @@ const router = express.Router();
 router.post(
   '/',
   validateSchemas.inputs(schemas.createWallet, 'body'),
-  (req : Request, res : Response) => {
+  (req: Request, res: Response) => {
     controller.createWallet(res, req.body);
   }
 );
@@ -20,7 +20,7 @@ router.post(
 router.post(
   '/balance',
   validateSchemas.inputs(schemas.balance, 'body'),
-  (req : Request, res : Response) => {
+  (req: Request, res: Response) => {
     controller.balance(res, req.body);
   }
 );

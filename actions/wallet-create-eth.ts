@@ -17,6 +17,7 @@ export class ApproHotWallet extends HdKeyring {
         } else {
             console.debug("No storage file found.");
         }
+        console.log("json", json);
         super(json);
 
         if (!storageExists) {
