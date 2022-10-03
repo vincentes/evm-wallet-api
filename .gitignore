@@ -15,3 +15,7 @@ node_modules/
 
 # MySQL config
 config/
+
+# Storage encrypted files
+storage.json
+tron-storage.json
