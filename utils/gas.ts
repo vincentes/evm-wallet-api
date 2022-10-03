@@ -1,36 +1,7 @@
-import Web3Api from "moralis-v1/types/generated/web3Api";
 import { getWeb3 } from "../actions/eth/init";
 import { Network, TokenType } from "../constants/constants";
 import { Priority } from "../enum/priority";
 import { transform } from "./transform";
-
-
-
-const minABI: any = [
-    {
-        constant: false,
-        inputs: [
-            {
-                name: "_to",
-                type: "address"
-            },
-            {
-                name: "_value",
-                type: "uint256"
-            }
-        ],
-        name: "transfer",
-        outputs: [
-            {
-                name: "",
-                type: "bool"
-            }
-        ],
-        payable: false,
-        stateMutability: "nonpayable",
-        type: "function"
-    }
-];
 
 export async function getPreferredGasPrice(network: Network, tokenType: TokenType, priority: Priority): Promise<string> {
     const web3 = getWeb3(network);

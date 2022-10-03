@@ -1,6 +1,9 @@
+import { decrypt, encrypt } from "../utils/encrypt";
+
 const HdKeyring = require('@metamask/eth-hd-keyring');
 var fs = require('fs');
 
+const STORAGE_FILE = "storage.json";
 
 export type Wallet = {
     address: string;
@@ -9,15 +12,16 @@ export type Wallet = {
 
 export class ApproHotWallet extends HdKeyring {
     constructor() {
-        const storageExists = fs.existsSync("storage.json");
+        const storageExists = fs.existsSync(STORAGE_FILE);
         let json;
         if (storageExists) {
-            json = JSON.parse(fs.readFileSync("storage.json", 'utf8'));
+            const file = fs.readFileSync(STORAGE_FILE, 'utf8');
+            const encrypted = JSON.parse(file);
+            json = JSON.parse(decrypt(encrypted));
             console.debug("Loaded storage file.");
         } else {
             console.debug("No storage file found.");
         }
-        console.log("json", json);
         super(json);
 
         if (!storageExists) {
@@ -56,8 +60,9 @@ export class ApproHotWallet extends HdKeyring {
 
     private async persist() {
         this.serialize().then((json: any) => {
-            console.debug("json", JSON.stringify(json));
-            fs.writeFileSync("storage.json", JSON.stringify(json), {
+            const encrypted = encrypt(JSON.stringify(json));
+            const stringified = JSON.stringify(encrypted);
+            fs.writeFileSync(STORAGE_FILE, stringified, {
                 encoding: 'utf-8'
             });
         });
