@@ -1,7 +1,9 @@
+import { decrypt, encrypt } from "../utils/encrypt";
 import { Tron } from "./tron/init";
 
 var fs = require('fs');
 
+const STORAGE_FILE = "tron-storage.json";
 
 export type Wallet = {
     address: string;
@@ -12,18 +14,17 @@ export class TronHotWallet {
     private wallets: Wallet[] = [];
 
     constructor() {
-        const storageExists = fs.existsSync("tron-storage.json");
-        let json;
+        const storageExists = fs.existsSync(STORAGE_FILE);
         if (storageExists) {
-            json = JSON.parse(fs.readFileSync("tron-storage.json", 'utf8'));
+            const file = fs.readFileSync(STORAGE_FILE, 'utf8');
+            console.log(file);
+            const encrypted = JSON.parse(file);
+            console.log(encrypted);
+            this.wallets = JSON.parse(decrypt(encrypted));
             console.debug("THW - Loaded storage file.");
         } else {
             console.debug("THW - No storage file found.");
             this.persist();
-        }
-
-        if (storageExists) {
-            this.wallets = json;
         }
     }
 
@@ -53,7 +54,9 @@ export class TronHotWallet {
     }
 
     private async persist() {
-        fs.writeFileSync("tron-storage.json", JSON.stringify(this.wallets), {
+        const encrypted = encrypt(JSON.stringify(this.wallets));
+        const stringified = JSON.stringify(encrypted);
+        fs.writeFileSync(STORAGE_FILE, stringified, {
             encoding: 'utf-8'
         });
     }
