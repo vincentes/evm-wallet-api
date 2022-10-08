@@ -29,7 +29,7 @@ export const withdraw = async (res: Response, parameters: any) => {
   } catch (error) {
     const message = getErrorMessage(error);
     reportError(error);
-    return res.status(502).json({
+    return res.status(422).json({
       msg: message
     });
   }
