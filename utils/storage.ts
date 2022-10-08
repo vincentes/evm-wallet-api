@@ -1,6 +1,6 @@
 import { Network, TokenType } from "../constants/constants";
 import config from "../config";
-import { Wallet } from "../actions/wallet-create-eth";
+import { Wallet } from "./wallet";
 
 export function isSupportedToken(network: Network, tokenType: TokenType) {
     return tokenType in config["WALLETS"][network];
@@ -16,6 +16,10 @@ export function transform(network: Network, tokenType: TokenType) {
     }
 
     throw new Error("Token not supported in the specified network.");
+}
+
+export function isConfiguredWallet(address: string) {
+    return config.WALLETS_LIST.map((wallet: any) => wallet.address).includes(address);
 }
 
 export function getConfiguredWallet(address: string): Wallet {

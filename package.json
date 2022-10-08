@@ -4,7 +4,7 @@
   "description": "Scalable and basic template for making Node.js apps by using express",
   "main": "index.ts",
   "scripts": {
-    "dev": "NODE_ENV=development ts-node index.ts",
+    "dev": "NODE_ENV=development nodemon index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier-eslint \"$PWD/{,!(node_modules)/**/}*.{js,json}\"",
@@ -42,8 +42,10 @@
     "@types/sequelize": "^4.28.14",
     "api": "^4.5.2",
     "bcrypt": "^5.0.0",
+    "bip39": "^3.0.4",
     "body-parser": "*",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "crypto-convert": "^1.1.6",
     "dotenv": "^16.0.1",
     "eth-hd-keyring": "^3.6.0",
@@ -58,6 +60,7 @@
     "web3": "^1.8.0"
   },
   "devDependencies": {
+    "@metamask/scure-bip39": "^2.0.3",
     "@types/express": "^4.17.13",
     "chai-http": "^4.3.0",
     "cross-env": "^7.0.3",

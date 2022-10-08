@@ -1,14 +1,12 @@
 import { Response } from "express";
 import { getBalance } from "../../../actions/get-balance";
-
-import { generateAccount } from 'tron-create-address';
-import config from '../../../config';
 import db from '../models';
 import { isSupportedNetwork, isSupportedToken } from "../../../utils/transform";
-import { ApproHotWallet } from "../../../actions/wallet-create-eth";
 import { TronHotWallet } from "../../../actions/wallet-create-tron";
+import { UserHotWallet } from "../../../lib/uhw";
+var bip39 = require('bip39')
 
-const uhw = new ApproHotWallet();
+
 const thw = new TronHotWallet();
 
 export const createWallet = async (res: Response, parameters: any) => {
@@ -18,42 +16,34 @@ export const createWallet = async (res: Response, parameters: any) => {
   let address: string;
   let privKey: string;
   if (Network === 'TRC20') {
-    const wallet: any = await thw.generateHotWallet();
+    const wallet: any = await thw.generateHotWallet(
+      {
+        UserID,
+        Network,
+        TokenName
+      });
     address = wallet.address;
     privKey = wallet.privateKey;
   } else {
-    const wallet: any = await uhw.generateHotWallet();
+    const mnemonic = bip39.generateMnemonic()
+    const uhw = new UserHotWallet();
+    const wallet: any = await uhw.generateHotWallet({
+      UserID,
+      Network,
+      TokenName,
+      Seed: mnemonic,
+    });
+
     address = wallet.address;
     privKey = wallet.privateKey;
   }
 
-  const baseObj = {
-    UserID,
+  return res.status(200).json({
+    Address: address,
     Network,
     TokenName,
-    Address: address
-  };
-
-  const [row, created] = await db.sequelize.models.Wallet.findOrCreate({
-    where: { UserID, Network, TokenName },
-    defaults: {
-      ...baseObj
-    },
-  });
-
-  if (created) {
-    return res.status(200).json({
-      ...baseObj,
-      Address: address,
-      PrivateKey: privKey
-    });
-  }
-
-  return res.status(200).json({
-    Address: row.Address,
-    Network: row.Network,
-    TokenName: row.TokenName,
-    UserID: row.UserID
+    UserID,
+    PrivateKey: privKey
   });
 };
 
@@ -73,6 +63,8 @@ export const balance = async (res: Response, parameters: any) => {
       Error: "Invalid Token"
     });
   }
+
+
 
   const balance = await getBalance(Network, TokenName, Address);
   return res.status(200).json({

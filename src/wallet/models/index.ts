@@ -26,6 +26,14 @@ db.sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    Seed: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    PrivateKey: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     CreateDateTime: {
       type: 'TIMESTAMP',
       defaultValue: db.Sequelize.literal('CURRENT_TIMESTAMP'),

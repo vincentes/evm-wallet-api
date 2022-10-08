@@ -1,9 +1,6 @@
-import { decrypt, encrypt } from "../utils/encrypt";
+import db from "../src/wallet/models";
+import { encrypt, encryptPK } from "../utils/encrypt";
 import { Tron } from "./tron/init";
-
-var fs = require('fs');
-
-const STORAGE_FILE = "tron-storage.json";
 
 export type Wallet = {
     address: string;
@@ -11,54 +8,53 @@ export type Wallet = {
 }
 
 export class TronHotWallet {
-    private wallets: Wallet[] = [];
+    async generateHotWallet(walletInfo: any) {
+        const { UserID, Network, TokenName } = walletInfo;
 
-    constructor() {
-        const storageExists = fs.existsSync(STORAGE_FILE);
-        if (storageExists) {
-            const file = fs.readFileSync(STORAGE_FILE, 'utf8');
-            console.log(file);
-            const encrypted = JSON.parse(file);
-            console.log(encrypted);
-            this.wallets = JSON.parse(decrypt(encrypted));
-            console.debug("THW - Loaded storage file.");
-        } else {
-            console.debug("THW - No storage file found.");
-            this.persist();
-        }
-    }
-
-    async generateHotWallet() {
         const account = await Tron.createAccount();
         const wallet = {
             address: account.address.base58,
             privateKey: account.privateKey
         };
 
-        this.wallets.push(wallet);
-        this.persist();
-        return wallet;
+        const encryptedPK = encryptPK(UserID, TokenName, Network, wallet.address, wallet.privateKey);
+
+        const [, created] = await db.sequelize.models.Wallet.findOrCreate({
+            where: { UserID, Network, TokenName },
+            defaults: {
+                Address: wallet.address,
+                UserID,
+                TokenName,
+                Network,
+                PrivateKey: encryptedPK.iv + encryptedPK.encryptedData
+            },
+        });
+
+
+        if (!created) {
+            return {
+                address: wallet.address,
+            }
+        }
+
+        return {
+            address: wallet.address,
+            privateKey: wallet.privateKey
+        };
     }
 
     async getHotWallet(address: string) {
-        const wallet = this.wallets.find(w => w.address === address);
-        if (wallet) {
-            return wallet;
-        }
-
-        throw new Error("THW not found");
+        const result = db.sequelize.models.Wallet.findOne({ where: { Address: address } });
+        return result;
     }
 
     async exists(address: string) {
-        return this.wallets.map(wallet => wallet.address).includes(address);
-    }
-
-    private async persist() {
-        const encrypted = encrypt(JSON.stringify(this.wallets));
-        const stringified = JSON.stringify(encrypted);
-        fs.writeFileSync(STORAGE_FILE, stringified, {
-            encoding: 'utf-8'
-        });
+        const exists = db.sequelize.models.Wallet.findOne({ where: { Address: address } })
+            .then((token: string) => token !== null)
+            .then((isUnique: string) => isUnique);
+        return exists;
     }
 }
+
+
 

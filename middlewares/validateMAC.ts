@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const checkIfHasMAC = async (req : any, res : any, next : any) => {
+const checkIfHasMAC = async (req: any, res: any, next: any) => {
   const code = req.headers['x-auth-code'] || null;
   if (code === null) {
     res.status(400).send('X-Auth-Code is required');
@@ -22,7 +22,7 @@ const checkIfHasMAC = async (req : any, res : any, next : any) => {
 
   console.log(MAC);
 
-  if (code === MAC) {
+  if (process.env.NODE_ENV == "development" || code === MAC) {
     next();
   } else {
     res.status(401).json({ msg: 'Invalid Parameter' });
