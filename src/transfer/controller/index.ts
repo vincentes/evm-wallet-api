@@ -2,13 +2,26 @@ import { Response } from "express";
 
 import { transfer } from "../../../actions/transfer";
 import { getErrorMessage, reportError } from "../../../utils/error";
+import { isValidAddress } from "../../../utils/wallet";
 
 export const withdraw = async (res: Response, parameters: any) => {
   const { UserID, Data } = parameters;
-  const { TokenName, Network, Amount, FromAddress, TargetAddress, Priority } = Data;
+  const { TokenName, Network, Amount, AddressFrom, AddressTo, Priority } = Data;
+
+  if (!isValidAddress(AddressFrom, Network)) {
+    return res.status(422).json({
+      Error: "Invalid Source Wallet Address"
+    });
+  }
+
+  if (!isValidAddress(AddressTo, Network)) {
+    return res.status(422).json({
+      Error: "Invalid Destination Wallet Address"
+    });
+  }
 
   try {
-    const tx = await transfer(UserID, Network, TokenName, FromAddress, TargetAddress, Amount, Priority);
+    const tx = await transfer(UserID, Network, TokenName, AddressFrom, AddressTo, Amount, Priority);
     return res.status(200).json({
       TxHash: tx,
       Status: "Confirmed"

@@ -20,7 +20,6 @@ export const gasPrice = async (res: Response, parameters: Parameters) => {
 
   try {
     const tx = await getGasPrice(Network, TokenName, Address, Amount);
-    console.log("tx", tx);
     if (Network === "TRC20") {
       const trx = parseInt(tx["TRX"]) / 1000000;
       const fiat = await conversion(NetworkToNativeCurrency[Network], StableCoinToFiat[TokenName], trx);

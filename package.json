@@ -55,7 +55,7 @@
     "moralis-v1": "^1.11.0",
     "sequelize": "^6.21.3",
     "tron-create-address": "^0.1.10",
-    "tronweb": "^4.3.0",
+    "tronweb": "^4.4.0",
     "uninstall": "*",
     "web3": "^1.8.0"
   },

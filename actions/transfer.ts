@@ -1,6 +1,6 @@
 import { Network, TokenType } from "../constants/constants";
 import { Priority } from "../enum/priority";
-import { getConfiguredWallet, transform } from "../utils/storage";
+import { getConfiguredWallet, isConfiguredWallet, transform } from "../utils/storage";
 import { TronHotWallet } from "./wallet-create-tron";
 
 const eth = require('./transfer-eth');
@@ -16,7 +16,11 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
         if (exists) {
             wallet = await thw.getHotWallet(fromAddress);
         } else {
-            wallet = getConfiguredWallet(fromAddress);
+            if (isConfiguredWallet(fromAddress)) {
+                wallet = getConfiguredWallet(fromAddress);
+            } else {
+                throw new Error("Source Wallet does not exist in the database.")
+            }
         }
 
         return await tron.transfer(tokenType, targetAddress, amount, wallet.privateKey);

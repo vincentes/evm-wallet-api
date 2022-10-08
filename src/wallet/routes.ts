@@ -25,4 +25,12 @@ router.post(
   }
 );
 
+router.get(
+  '/',
+  validateSchemas.inputs(schemas.info, 'body'),
+  (req: Request, res: Response) => {
+    controller.info(res, req.body);
+  }
+);
+
 export default router;

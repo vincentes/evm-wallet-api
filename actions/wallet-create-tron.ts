@@ -1,5 +1,5 @@
 import db from "../src/wallet/models";
-import { encrypt, encryptPK } from "../utils/encrypt";
+import { decryptPK, encrypt, encryptPK } from "../utils/encrypt";
 import { Tron } from "./tron/init";
 
 export type Wallet = {
@@ -11,41 +11,47 @@ export class TronHotWallet {
     async generateHotWallet(walletInfo: any) {
         const { UserID, Network, TokenName } = walletInfo;
 
-        const account = await Tron.createAccount();
+        const account = await Tron.createRandom();
         const wallet = {
-            address: account.address.base58,
-            privateKey: account.privateKey
+            address: account.address,
+            privateKey: account.privateKey,
+            seed: account.mnemonic.phrase
         };
 
         const encryptedPK = encryptPK(UserID, TokenName, Network, wallet.address, wallet.privateKey);
+        const encryptedSeed = encryptPK(UserID, TokenName, Network, wallet.address, wallet.seed);
 
-        const [, created] = await db.sequelize.models.Wallet.findOrCreate({
+        const [entity, created] = await db.sequelize.models.Wallet.findOrCreate({
             where: { UserID, Network, TokenName },
             defaults: {
                 Address: wallet.address,
                 UserID,
                 TokenName,
                 Network,
-                PrivateKey: encryptedPK.iv + encryptedPK.encryptedData
+                PrivateKey: encryptedPK.iv + encryptedPK.encryptedData,
+                Seed: encryptedSeed.iv + encryptedSeed.encryptedData
             },
         });
 
 
         if (!created) {
             return {
-                address: wallet.address,
+                address: entity.Address,
+                privateKey: decryptPK(UserID, TokenName, Network, entity.Address, entity.PrivateKey),
+                seed: decryptPK(UserID, TokenName, Network, entity.Address, entity.Seed)
             }
         }
 
         return {
-            address: wallet.address,
-            privateKey: wallet.privateKey
+            address: entity.Address,
+            privateKey: wallet.privateKey,
+            seed: wallet.seed
         };
     }
 
     async getHotWallet(address: string) {
-        const result = db.sequelize.models.Wallet.findOne({ where: { Address: address } });
-        return result;
+        const uhw = db.sequelize.models.Wallet.findOne({ where: { Address: address } });
+        return uhw;
     }
 
     async exists(address: string) {

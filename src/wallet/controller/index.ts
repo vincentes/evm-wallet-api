@@ -4,6 +4,9 @@ import db from '../models';
 import { isSupportedNetwork, isSupportedToken } from "../../../utils/transform";
 import { TronHotWallet } from "../../../actions/wallet-create-tron";
 import { UserHotWallet } from "../../../lib/uhw";
+import { getWalletInfo } from "../../../actions/wallet-info";
+import { getErrorMessage, reportError } from "../../../utils/error";
+import { isValidAddress } from "../../../utils/wallet";
 var bip39 = require('bip39')
 
 
@@ -15,6 +18,7 @@ export const createWallet = async (res: Response, parameters: any) => {
 
   let address: string;
   let privKey: string;
+  let seed: string;
   if (Network === 'TRC20') {
     const wallet: any = await thw.generateHotWallet(
       {
@@ -24,6 +28,7 @@ export const createWallet = async (res: Response, parameters: any) => {
       });
     address = wallet.address;
     privKey = wallet.privateKey;
+    seed = wallet.seed;
   } else {
     const mnemonic = bip39.generateMnemonic()
     const uhw = new UserHotWallet();
@@ -36,6 +41,7 @@ export const createWallet = async (res: Response, parameters: any) => {
 
     address = wallet.address;
     privKey = wallet.privateKey;
+    seed = wallet.seed;
   }
 
   return res.status(200).json({
@@ -43,7 +49,8 @@ export const createWallet = async (res: Response, parameters: any) => {
     Network,
     TokenName,
     UserID,
-    PrivateKey: privKey
+    PrivateKey: privKey,
+    Seed: seed,
   });
 };
 
@@ -64,8 +71,6 @@ export const balance = async (res: Response, parameters: any) => {
     });
   }
 
-
-
   const balance = await getBalance(Network, TokenName, Address);
   return res.status(200).json({
     TokenName,
@@ -75,7 +80,26 @@ export const balance = async (res: Response, parameters: any) => {
   });
 };
 
+export const info = async (res: Response, parameters: any) => {
+  const { Data, UserID } = parameters;
+  const { TokenName, Network, Address } = Data;
+  try {
+    if (!isValidAddress(Address, Network)) {
+      return res.status(422).json({ msg: "Invalid Address" });
+    }
+
+    const wallet = await getWalletInfo(UserID, TokenName, Network, Address);
+    return res.status(200).json(wallet);
+  } catch (error) {
+    reportError(error);
+    return res.status(502).json({
+      msg: "Invalid Params"
+    });
+  }
+}
+
 export default {
   balance,
-  createWallet
+  createWallet,
+  info
 }

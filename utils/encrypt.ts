@@ -23,7 +23,6 @@ export function encrypt(text: any) {
 
 
 export function encryptWithKey(text: any, key: string) {
-    console.log({ text, key });
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(ENCRYPTION_TYPE, Buffer.from(key), iv);
     let encrypted = cipher.update(text);
@@ -43,7 +42,6 @@ export function encryptPK(userId: string, tokenName: string, network: string, ad
 
 
 export function decryptPK(userId: string, tokenName: string, network: string, address: string, privateKey: string) {
-    console.log({ userId, tokenName, network, address });
     return decryptWithKey(concatenatedToIVPair(privateKey), pkEncryptionKey(userId, tokenName, network, address));
 }
 
@@ -58,7 +56,6 @@ export function decrypt(text: EncryptedContent) {
 
 
 export function decryptWithKey(text: EncryptedContent, key: string) {
-    console.log({ text, key });
     const iv = Buffer.from(text.iv, REPRESENTATION_TYPE);
     const encryptedText = Buffer.from(text.encryptedData, REPRESENTATION_TYPE);
     const decipher = crypto.createDecipheriv(ENCRYPTION_TYPE, Buffer.from(key), iv);

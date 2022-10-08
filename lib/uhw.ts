@@ -1,5 +1,6 @@
 import db from "../src/wallet/models";
-import { encryptPK } from "../utils/encrypt";
+import { decryptPK, encryptPK } from "../utils/encrypt";
+import { getConfiguredWallet, isConfiguredWallet } from "../utils/storage";
 
 const HdKeyring = require('@metamask/eth-hd-keyring');
 
@@ -27,7 +28,7 @@ export class UserHotWallet extends HdKeyring {
         const encryptedSeed = encryptPK(UserID, TokenName, Network, generatedAccount, Seed);
         const encryptedPK = encryptPK(UserID, TokenName, Network, generatedAccount, privateKey);
 
-        const [, created] = await db.sequelize.models.Wallet.findOrCreate({
+        const [entity, created] = await db.sequelize.models.Wallet.findOrCreate({
             where: { UserID, Network, TokenName },
             defaults: {
                 Address: generatedAccount,
@@ -41,19 +42,26 @@ export class UserHotWallet extends HdKeyring {
 
         if (!created) {
             return {
-                address: generatedAccount,
+                address: entity.Address,
+                privateKey: decryptPK(UserID, TokenName, Network, entity.Address, entity.PrivateKey),
+                seed: decryptPK(UserID, TokenName, Network, entity.Address, entity.Seed)
             }
         }
 
         return {
-            address: generatedAccount,
-            privateKey
+            address: entity.Address,
+            privateKey,
+            seed: Seed
         };
     }
 
     async getHotWallet(address: string) {
         const uhw = db.sequelize.models.Wallet.findOne({ where: { Address: address } });
         if (!uhw) {
+            if (isConfiguredWallet(address)) {
+                return getConfiguredWallet(address);
+            }
+
             throw new Error("UHW - Wallet not found.");
         }
         return uhw;
