@@ -11,7 +11,6 @@ export async function getWalletInfo(userId: string, tokenName: string, network: 
         const thw = new TronHotWallet();
 
         const exists = await thw.exists(address);
-        console.log("thw 1");
         if (!exists) {
             if (!isConfiguredWallet(address)) {
                 throw new Error("Wallet does not exist in the database.");
