@@ -30,6 +30,9 @@ export async function getWalletInfo(userId: string, tokenName: string, network: 
         }
     } else {
         const wallet = await uhw.getHotWallet(address);
+        if (!wallet) {
+            throw new Error("UHW - not found");
+        }
         return {
             Address: wallet.Address,
             PrivateKey: decryptPK(userId, tokenName, network, address, wallet.PrivateKey),

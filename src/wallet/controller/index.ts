@@ -6,7 +6,7 @@ import { TronHotWallet } from "../../../actions/wallet-create-tron";
 import { UserHotWallet } from "../../../lib/uhw";
 import { getWalletInfo } from "../../../actions/wallet-info";
 import { getErrorMessage, reportError } from "../../../utils/error";
-import { isValidAddress } from "../../../utils/wallet";
+import { exists, isValidAddress } from "../../../utils/wallet";
 var bip39 = require('bip39')
 
 
@@ -86,6 +86,11 @@ export const info = async (res: Response, parameters: any) => {
   try {
     if (!isValidAddress(Address, Network)) {
       return res.status(422).json({ msg: "Invalid Address" });
+    }
+
+    const uhwExists = await exists(Address, Network);
+    if (!uhwExists) {
+      return res.status(422).json({ msg: "Address is not a User Hot Wallet" })
     }
 
     const wallet = await getWalletInfo(UserID, TokenName, Network, Address);
