@@ -7,6 +7,7 @@ import { UserHotWallet } from "../../../lib/uhw";
 import { getWalletInfo } from "../../../actions/wallet-info";
 import { getErrorMessage, reportError } from "../../../utils/error";
 import { exists, isValidAddress } from "../../../utils/wallet";
+import { getConfiguredWallet, isConfiguredWallet } from "../../../utils/storage";
 var bip39 = require('bip39')
 
 
@@ -27,11 +28,15 @@ export const wallet = async (res: Response, parameters: any) => {
     const existsTRC = await thw.exists(Address);
     const existsERC = await uhw.exists(Address);
     if (existsTRC || existsERC) {
-      const wallet = await getWalletInfo(UserID, TokenName, Network, Address);
-      return res.status(200).json(wallet);
-    } else {
-      return res.status(422).json({ msg: "Address is not a User Hot Wallet" });
+      try {
+        const wallet = await getWalletInfo(UserID, TokenName, Network, Address);
+        return res.status(200).json(wallet);
+      } catch (error) {
+        return res.status(422).json({ msg: "Verification failed." });
+      }
     }
+
+    return res.status(422).json({ msg: "Address is not a User Hot Wallet" });
   }
 
   let address: string;
