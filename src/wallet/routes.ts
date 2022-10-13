@@ -11,9 +11,9 @@ const router = express.Router();
 
 router.post(
   '/',
-  validateSchemas.inputs(schemas.createWallet, 'body'),
+  validateSchemas.inputs(schemas.wallet, 'body'),
   (req: Request, res: Response) => {
-    controller.createWallet(res, req.body);
+    controller.wallet(res, req.body);
   }
 );
 
@@ -22,14 +22,6 @@ router.post(
   validateSchemas.inputs(schemas.balance, 'body'),
   (req: Request, res: Response) => {
     controller.balance(res, req.body);
-  }
-);
-
-router.get(
-  '/',
-  validateSchemas.inputs(schemas.info, 'body'),
-  (req: Request, res: Response) => {
-    controller.info(res, req.body);
   }
 );
 

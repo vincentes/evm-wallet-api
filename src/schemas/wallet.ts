@@ -1,16 +1,17 @@
 import Joi from 'joi';
 
-export const createWallet = Joi.object().keys({
+export const wallet = Joi.object().keys({
   RequestID: Joi.string().required(),
   UserID: Joi.string().required(),
   Data: Joi.object({
+    Address: Joi.string().optional(),
     TokenName: Joi.string().required(),
     Network: Joi.string().required(),
   })
     .required(),
   ServerDateTime: Joi.date().required(),
 })
-  .meta({ className: 'CreateWalletDTO' });
+  .meta({ className: 'WalletDTO' });
 
 export const balance = Joi.object().keys({
   RequestID: Joi.string().required(),
@@ -57,23 +58,10 @@ export const gasEstimate = Joi.object().keys({
 })
   .meta({ className: 'GasEstimateDTO' });
 
-export const info = Joi.object().keys({
-  RequestID: Joi.string().required(),
-  UserID: Joi.string().max(32).required(),
-  Data: Joi.object({
-    TokenName: Joi.string().required(),
-    Network: Joi.string().required(),
-    Address: Joi.string().required(),
-  })
-    .required(),
-  ServerDateTime: Joi.date().required(),
-})
-  .meta({ className: 'WalletInfoDTO' });
 
 export default {
   balance,
-  createWallet,
+  wallet,
   withdrawal,
   gasEstimate,
-  info
 }

@@ -11,10 +11,28 @@ var bip39 = require('bip39')
 
 
 const thw = new TronHotWallet();
+const uhw = new UserHotWallet();
 
-export const createWallet = async (res: Response, parameters: any) => {
+export const wallet = async (res: Response, parameters: any) => {
   const { UserID, Data } = parameters;
-  const { TokenName, Network } = Data;
+  const { TokenName, Network, Address } = Data;
+
+  if (!isSupportedNetwork(Network)) {
+    return res.status(400).json({
+      Error: "Invalid Network"
+    });
+  }
+
+  if (Address) {
+    const existsTRC = await thw.exists(Address);
+    const existsERC = await uhw.exists(Address);
+    if (existsTRC || existsERC) {
+      const wallet = await getWalletInfo(UserID, TokenName, Network, Address);
+      return res.status(200).json(wallet);
+    } else {
+      return res.status(422).json({ msg: "Address is not a User Hot Wallet" });
+    }
+  }
 
   let address: string;
   let privKey: string;
@@ -31,7 +49,6 @@ export const createWallet = async (res: Response, parameters: any) => {
     seed = wallet.seed;
   } else {
     const mnemonic = bip39.generateMnemonic()
-    const uhw = new UserHotWallet();
     const wallet: any = await uhw.generateHotWallet({
       UserID,
       Network,
@@ -105,6 +122,6 @@ export const info = async (res: Response, parameters: any) => {
 
 export default {
   balance,
-  createWallet,
+  wallet,
   info
 }
