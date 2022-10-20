@@ -22,15 +22,16 @@ export function isConfiguredWallet(address: string) {
     return config.WALLETS_LIST.map((wallet: any) => wallet.address).includes(address);
 }
 
-
-
-export function isConfiguredWalletFor(network: string, tokenName: string) {
-    if (network in config.WALLETS && tokenName in config.WALLETS[network]) {
+export function isConfiguredWalletFor(address: string, network: string, tokenName: string) {
+    if (network in config.WALLETS && tokenName in config.WALLETS[network] && config.WALLETS[network][tokenName].address === address) {
         return true;
     }
     return false;
 }
 
+export function isInvalidConfig(address: string, network: string, tokenName: string) {
+    return isConfiguredWallet(address) && !isConfiguredWalletFor(address, network, tokenName);
+}
 
 export function getConfiguredWallet(address: string): Wallet {
     let configuredWallet: any;

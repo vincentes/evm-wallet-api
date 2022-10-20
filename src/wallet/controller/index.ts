@@ -6,7 +6,7 @@ import { UserHotWallet } from "../../../lib/uhw";
 import { getWalletInfo } from "../../../actions/wallet-info";
 import { reportError } from "../../../utils/error";
 import { exists, isValidAddress } from "../../../utils/wallet";
-import { getConfiguredWallet, isConfiguredWallet, isConfiguredWalletFor } from "../../../utils/storage";
+import { getConfiguredWallet, isConfiguredWallet, isConfiguredWalletFor, isInvalidConfig } from "../../../utils/storage";
 var bip39 = require('bip39')
 
 const thw = new TronHotWallet();
@@ -23,14 +23,18 @@ export const wallet = async (res: Response, parameters: any) => {
   }
 
   if (Address) {
-    if (isConfiguredWalletFor(Network, TokenName) && isConfiguredWallet(Address)) {
+    if (isInvalidConfig(Address, Network, TokenName)) {
+      return res.status(422).json({ msg: "Verification failed." });
+    }
+
+    if (isConfiguredWalletFor(Address, Network, TokenName)) {
       const wallet = getConfiguredWallet(Address);
       return res.status(200).json({
         Address,
         Network,
         TokenName,
         PrivateKey: wallet.privateKey
-      })
+      });
     }
 
     const existsTRC = await thw.exists(Address);
