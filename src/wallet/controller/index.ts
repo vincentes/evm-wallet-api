@@ -1,15 +1,13 @@
 import { Response } from "express";
 import { getBalance } from "../../../actions/get-balance";
-import db from '../models';
 import { isSupportedNetwork, isSupportedToken } from "../../../utils/transform";
 import { TronHotWallet } from "../../../actions/wallet-create-tron";
 import { UserHotWallet } from "../../../lib/uhw";
 import { getWalletInfo } from "../../../actions/wallet-info";
-import { getErrorMessage, reportError } from "../../../utils/error";
+import { reportError } from "../../../utils/error";
 import { exists, isValidAddress } from "../../../utils/wallet";
-import { getConfiguredWallet, isConfiguredWallet } from "../../../utils/storage";
+import { getConfiguredWallet, isConfiguredWallet, isConfiguredWalletFor } from "../../../utils/storage";
 var bip39 = require('bip39')
-
 
 const thw = new TronHotWallet();
 const uhw = new UserHotWallet();
@@ -25,6 +23,16 @@ export const wallet = async (res: Response, parameters: any) => {
   }
 
   if (Address) {
+    if (isConfiguredWalletFor(Network, TokenName) && isConfiguredWallet(Address)) {
+      const wallet = getConfiguredWallet(Address);
+      return res.status(200).json({
+        Address,
+        Network,
+        TokenName,
+        PrivateKey: wallet.privateKey
+      })
+    }
+
     const existsTRC = await thw.exists(Address);
     const existsERC = await uhw.exists(Address);
     if (existsTRC || existsERC) {
