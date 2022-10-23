@@ -1,4 +1,4 @@
-name: Build and test APPRO ${{GITHUB_REF##*/}} branch
+name: Build and test APPRO branch
 
 on:
   push:
