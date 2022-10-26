@@ -1,4 +1,3 @@
-
 const io = require('@pm2/io')
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -11,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(expressip().getIpInfoMiddleware);
 
-app.use((req : any, res : any, next : any) => {
+app.use((req: any, res: any, next: any) => {
   // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN);
 

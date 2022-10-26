@@ -1,5 +1,5 @@
 const request = require('supertest');
-const server = require('../../app');
+import server from '../../app';
 
 const correctPayload = {
   ServerDateTime: '12/03/23',
@@ -8,30 +8,9 @@ const correctPayload = {
 };
 
 const correctCode = '591cac29daa1af094fc337b3d81cae3c';
+const SERVER_URL = "https://localhost:" + process.env.SERVER_PORT;
 
 describe('ValidateMiddleware', () => {
-  it('ANY request with no valid ip should return unauthorized', () => {
-    return request(server)
-      .get('/wallet')
-      .set('x-forwarded-for', '123.212.32.1')
-      .set('X-Auth-Code', 'XYZ')
-      .then((response) => {
-        expect(response.statusCode).toBe(401);
-        expect(response.body.message).toBe('Address not whitelisted');
-      });
-  });
-
-  it('Request with invalid content-type should be ignored', () => {
-    return request(server)
-      .get('/wallet')
-      .set('X-Auth-Code', 'XYZ')
-      .set('Content-Type', 'multipart/form-data')
-      .then((response) => {
-        expect(response.statusCode).toBe(400);
-        expect(response.body.msg).toBe('Invalid Parameter');
-      });
-  });
-
   it('Missing RequestID should return invalid', async () => {
     const invalidRequestIdPayload = { ...correctPayload };
     invalidRequestIdPayload.RequestID = null;
@@ -67,7 +46,7 @@ describe('ValidateMiddleware', () => {
     invalidServerDateTime.ServerDateTime = null;
 
     const res = await request(server)
-      .get('/wallet')
+      .post('/wallet')
       .set('x-forwarded-for', process.env.WHITELISTED_IPS)
       .set('X-Auth-Code', correctCode)
       .set('Content-Type', 'application/json')
