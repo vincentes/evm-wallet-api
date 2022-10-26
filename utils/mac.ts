@@ -1,10 +1,10 @@
 import crypto from 'crypto';
 
-export function calculate(req: any) {
+export function calculate(body: any) {
 
-    const jsonStr = JSON.stringify(req.body);
-    const { RequestID } = req.body;
-    const { ServerDateTime } = req.body;
+    const jsonStr = JSON.stringify(body);
+    const { RequestID } = body;
+    const { ServerDateTime } = body;
     const key1 = `${process.env.API_KEY}:${RequestID}:${ServerDateTime}`;
     const key2 = `${process.env.API_KEY}:${jsonStr}`;
 

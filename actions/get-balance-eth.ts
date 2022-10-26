@@ -27,7 +27,7 @@ const minABI: any = [
 
 export async function getBalance(network: Network, tokenType: TokenType, targetAddress: string) {
   const balance = await getBalanceBN(network, tokenType, targetAddress);
-  return balance.toString();
+  return balance;
 }
 
 
@@ -41,9 +41,13 @@ export async function getBalanceBN(network: Network, tokenType: TokenType, targe
   }
 
   const contract = new web3.eth.Contract(minABI, tokenAddress);
-  const res = await contract.methods.balanceOf(targetAddress).call();
+  const nativeBalance = await web3.eth.getBalance(targetAddress);
+  const tokenBalance = await contract.methods.balanceOf(targetAddress).call();
 
-  return res;
+  return {
+    TokenBalance: tokenBalance,
+    NativeBalance: nativeBalance
+  };
 }
 
 
