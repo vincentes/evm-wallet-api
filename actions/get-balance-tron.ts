@@ -10,7 +10,7 @@ export async function getBalance(tokenType: TokenType, targetAddress: string) {
         const nativeBalance = await Tron.trx.getBalance(targetAddress);
         let tokenBalance = await contract.balanceOf(targetAddress).call();
         return {
-            NativeBalance: nativeBalance,
+            NativeBalance: nativeBalance.toString(),
             TokenBalance: tokenBalance.toString()
         };
     } catch (error) {

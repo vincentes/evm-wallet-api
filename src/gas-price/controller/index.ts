@@ -27,7 +27,10 @@ export const gasPrice = async (res: Response, parameters: Parameters) => {
         Amount,
         TokenName,
         Network,
-        GasFee: fiat
+        GasFee: {
+          Fiat: fiat,
+          Native: trx
+        }
       });
     } else {
       const lowFiatTx = conversion(NetworkToNativeCurrency[Network], StableCoinToFiat[TokenName], parseFloat(tx["Low"]));
@@ -40,9 +43,16 @@ export const gasPrice = async (res: Response, parameters: Parameters) => {
         TokenName,
         Network,
         GasFee: {
-          Low: lowFiat,
-          Medium: medFiat,
-          High: highFiat
+          Fiat: {
+            Low: lowFiat,
+            Medium: medFiat,
+            High: highFiat
+          },
+          Native: {
+            Low: tx["Low"],
+            Medium: tx["Medium"],
+            High: tx["High"]
+          }
         }
       });
     }
