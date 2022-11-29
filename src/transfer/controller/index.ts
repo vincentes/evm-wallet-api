@@ -6,7 +6,7 @@ import { isValidAddress } from "../../../utils/wallet";
 
 export const withdraw = async (res: Response, parameters: any) => {
   const { UserID, Data } = parameters;
-  const { TokenName, Network, Amount, AddressFrom, AddressTo, Priority } = Data;
+  const { TokenName, Network, Amount, AddressFrom, AddressTo, Priority, Native } = Data;
 
   if (!isValidAddress(AddressFrom, Network)) {
     return res.status(422).json({
@@ -21,7 +21,7 @@ export const withdraw = async (res: Response, parameters: any) => {
   }
 
   try {
-    const tx = await transfer(UserID, Network, TokenName, AddressFrom, AddressTo, Amount, Priority);
+    const tx = await transfer(UserID, Network, TokenName, AddressFrom, AddressTo, Amount, Native, Priority);
     return res.status(200).json({
       TxHash: tx,
       Status: "Confirmed"

@@ -36,8 +36,7 @@ db.sequelize.define(
       allowNull: false,
     },
     Amount: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.INTEGER
     }
   },
   {

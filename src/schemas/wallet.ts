@@ -37,6 +37,7 @@ export const withdrawal = Joi.object().keys({
     AddressTo: Joi.string().required(),
     Priority: Joi.string().valid("0", "1", "2").optional().default("1"),
     Amount: Joi.string().required(),
+    Native: Joi.boolean().required(),
   })
     .required(),
   ServerDateTime: Joi.date().required(),

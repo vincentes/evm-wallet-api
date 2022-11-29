@@ -1,6 +1,6 @@
 import { Network, TokenType } from "../constants/constants";
 import config from "../config";
-import { Wallet } from "./wallet";
+import { Wallet } from "../types/wallet";
 
 export function isSupportedToken(network: Network, tokenType: TokenType) {
     return tokenType in config["WALLETS"][network];
