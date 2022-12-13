@@ -1,6 +1,6 @@
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 
-const config : any = {
+const config: any = {
   port: process.env.SERVER_PORT,
   dbUrlMongoDB: process.env.dbUrlMongoDB,
   API_KEY_JWT: process.env.API_KEY_JWT,

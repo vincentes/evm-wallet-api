@@ -18,6 +18,23 @@ export async function transfer(tokenType: TokenType, targetAddress: string, amou
     }
 }
 
+export async function transferNative(tokenType: TokenType, targetAddress: string, amount: string, privateKey: string) {
+    const SpecificWallet = getTronWalletInterface(privateKey);
+    const tradeObject = await SpecificWallet.transactionBuilder.sendTrx(
+        targetAddress,
+        amount,
+        SpecificWallet.address
+    );
+    const signedtxn = await SpecificWallet.trx.sign(
+        tradeObject,
+        privateKey
+    );
+    const receipt = await SpecificWallet.trx.sendRawTransaction(
+        signedtxn
+    );
+    return receipt.txid;
+}
+
 export async function gasEstimate(network: Network, tokenType: TokenType, targetAddress: string, privateKey: string, amount: number) {
     const contractAddress = transform(Network.TRC20, tokenType);
     const SpecificWallet = getTronWalletInterface(privateKey);

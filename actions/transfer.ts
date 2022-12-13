@@ -23,7 +23,12 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
             }
         }
 
-        return await tron.transfer(tokenType, targetAddress, amount, wallet.privateKey);
+        if (native) {
+            return await tron.transferNative(tokenType, targetAddress, amount, wallet.privateKey);
+        } else {
+            return await tron.transfer(tokenType, targetAddress, amount, wallet.privateKey);
+        }
+
     } else {
         if (native) {
             return await eth.transferNative(userId, network, tokenType, fromAddress, targetAddress, amount, priority);

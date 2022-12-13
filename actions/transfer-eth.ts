@@ -1,8 +1,8 @@
-import { Network, TokenType } from "../constants/constants";
+import { Network, NetworkId, TokenType } from "../constants/constants";
 import { Priority } from "../enum/priority";
 import db from "../src/wallet/models";
 import { decryptPK } from "../utils/encrypt";
-import { getPreferredGasPrice, getPreferredGasPriceWei } from "../utils/gas";
+import { getPreferredGasPriceWei } from "../utils/gas";
 import { getConfiguredWallet, isConfiguredWallet } from "../utils/storage";
 import { transform } from "../utils/transform";
 import { getWeb3 } from "./eth/init";
@@ -38,6 +38,7 @@ const minABI: any = [
 export async function transferNative(userId: string, network: Network, tokenType: TokenType, fromAddress: string, targetAddress: string, amount: string, priority: Priority) {
   const web3 = getWeb3(network);
   let tokenAddress;
+  console.log("Network", NetworkId[network]);
   try {
     tokenAddress = transform(network, tokenType);
   } catch (error) {
@@ -66,7 +67,6 @@ export async function transferNative(userId: string, network: Network, tokenType
   if (configured) {
     pk = wallet.privateKey;
   } else {
-    console.log({ userId, tokenType, network, fromAddress, pk: wallet.dataValues["PrivateKey"] })
     pk = decryptPK(wallet.UserID, tokenType, network, fromAddress, wallet.dataValues["PrivateKey"]);
   }
 
@@ -79,13 +79,16 @@ export async function transferNative(userId: string, network: Network, tokenType
 
   const tx = {
     to: targetAddress,
-    value: web3.utils.toWei(amount),
+    value: amount,
     gasLimit: web3.utils.toHex("21000"),
     maxPriorityFeePerGas: web3.utils.toWei("5", "gwei"),
     maxFeePerGas: gasPrice,
     nonce: nonce,
-    from: fromAddress
+    from: fromAddress,
+    chainId: 56,
   };
+
+  console.log("tx", tx);
 
   let signedTx = await web3.eth.accounts.signTransaction(tx, pk);
   let execution = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
@@ -101,6 +104,7 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
     return 0;
   }
 
+
   let wallet = await db.sequelize.models.Wallet.findOne({
     where: {
       Network: network,
@@ -123,7 +127,6 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
   if (configured) {
     pk = wallet.privateKey;
   } else {
-    console.log({ userId, tokenType, network, fromAddress, pk: wallet.dataValues["PrivateKey"] })
     pk = decryptPK(wallet.UserID, tokenType, network, fromAddress, wallet.dataValues["PrivateKey"]);
   }
 
@@ -145,7 +148,8 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
     to: tokenAddress,
     data,
     gas,
-    gasPrice
+    gasPrice,
+    chainId: NetworkId[network]
   };
 
   const signed = await web3.eth.accounts.signTransaction(options, pk);

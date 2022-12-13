@@ -20,6 +20,11 @@ export enum Network {
     BEP20 = "BEP20"
 }
 
+export const NetworkId = {
+    ERC20: 1,
+    BEP20: 56
+}
+
 export const StableCoinToFiat = {
     USDT: Fiat.USD,
     IDRT: Fiat.IDR
