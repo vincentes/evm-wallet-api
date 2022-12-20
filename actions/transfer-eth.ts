@@ -79,18 +79,34 @@ export async function transferNative(userId: string, network: Network, tokenType
 
   const gasPrice = await getPreferredGasPriceWei(network, tokenType, priority);
 
-  const tx = {
-    to: targetAddress,
-    value: amount,
-    gasLimit: web3.utils.toHex("21000"),
-    maxPriorityFeePerGas: web3.utils.toWei("5", "gwei"),
-    maxFeePerGas: gasPrice,
-    nonce: nonce,
-    from: fromAddress,
-    chainId: 56,
-  };
+  let tx;
+  if (network === Network.BEP20) {
+    tx = {
+      to: targetAddress,
+      value: amount,
+      gasPrice: web3.utils.toWei("5", "gwei"),
+      gas: '22000',
+      nonce: nonce,
+      from: fromAddress,
+      chainId: 56,
+      type: "0x0"
+    };
+  } else {
+    tx = {
+      to: targetAddress,
+      value: amount,
+      gasLimit: web3.utils.toHex("21000"),
+      maxPriorityFeePerGas: web3.utils.toWei("5", "gwei"),
+      maxFeePerGas: gasPrice,
+      nonce: nonce,
+      from: fromAddress
+    };
+  }
+
 
   console.log("tx", tx);
+  console.log("gas", gasPrice.toString());
+  console.log("pk", pk);
 
   let signedTx = await web3.eth.accounts.signTransaction(tx, pk);
   let execution = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);

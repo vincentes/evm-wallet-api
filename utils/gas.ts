@@ -33,6 +33,8 @@ export async function getPreferredGasPriceWei(network: Network, tokenType: Token
         return "0";
     }
 
+    console.log("getPreferredGasPriceWei TokenAddr", tokenAddress)
+
     const gasPrice = await web3.eth.getGasPrice();
     const cost = web3.utils.toBN(gasPrice);
 
