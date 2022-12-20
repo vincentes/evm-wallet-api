@@ -53,6 +53,8 @@ export async function transferNative(userId: string, network: Network, tokenType
     }
   });
 
+  console.log("Wallet", wallet)
+
   let configured = false;
   if (!wallet) {
     if (isConfiguredWallet(fromAddress)) {
@@ -71,7 +73,7 @@ export async function transferNative(userId: string, network: Network, tokenType
   }
 
   const nonce = await web3.eth.getTransactionCount(
-    wallet.address,
+    configured ? wallet.address : wallet.Address,
     "latest"
   );
 
