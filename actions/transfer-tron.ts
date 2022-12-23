@@ -19,12 +19,15 @@ export async function transfer(tokenType: TokenType, targetAddress: string, amou
 }
 
 export async function transferNative(tokenType: TokenType, targetAddress: string, amount: string, privateKey: string) {
+    console.log("pk", privateKey)
     const SpecificWallet = getTronWalletInterface(privateKey);
     const tradeObject = await SpecificWallet.transactionBuilder.sendTrx(
         targetAddress,
         amount,
         SpecificWallet.address
     );
+    console.log("trade", tradeObject)
+
     const signedtxn = await SpecificWallet.trx.sign(
         tradeObject,
         privateKey
@@ -32,6 +35,8 @@ export async function transferNative(tokenType: TokenType, targetAddress: string
     const receipt = await SpecificWallet.trx.sendRawTransaction(
         signedtxn
     );
+    console.log("receipt", receipt)
+
     return receipt.txid;
 }
 
