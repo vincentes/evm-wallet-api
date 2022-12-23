@@ -51,6 +51,7 @@ export class TronHotWallet {
 
     async getHotWallet(address: string) {
         const uhw = db.sequelize.models.Wallet.findOne({ where: { Address: address } });
+        console.log("uhw", uhw)
         return uhw;
     }
 
