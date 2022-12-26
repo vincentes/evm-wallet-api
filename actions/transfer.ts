@@ -12,9 +12,9 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
         let wallet = await getWalletInfo(userId, tokenType, network, fromAddress);
         console.log("wallet", wallet);
         if (native) {
-            return await tron.transferNative(tokenType, targetAddress, amount, wallet["PrivateKey"]);
+            return await tron.transferNative(tokenType, targetAddress, amount, wallet["PrivateKey"] ? wallet["PrivateKey"] : wallet["privateKey"]);
         } else {
-            return await tron.transfer(tokenType, targetAddress, amount, wallet["PrivateKey"]);
+            return await tron.transfer(tokenType, targetAddress, amount, wallet["PrivateKey"] ? wallet["PrivateKey"] : wallet["privateKey"]);
         }
 
     } else {
