@@ -10,7 +10,7 @@ const tron = require('./transfer-tron');
 export async function transfer(userId: string, network: Network, tokenType: TokenType, fromAddress: string, targetAddress: string, amount: string, native: boolean, priority?: Priority) {
     if (network === Network.TRC20) {
         let wallet = await getWalletInfo(userId, tokenType, network, fromAddress);
-
+        console.log("wallet", wallet);
         if (native) {
             return await tron.transferNative(tokenType, targetAddress, amount, wallet["PrivateKey"]);
         } else {
