@@ -47,6 +47,7 @@
     "express-ip": "^1.0.4",
     "joi": "^17.6.0",
     "moralis-v1": "^1.11.0",
+    "morgan": "^1.10.0",
     "sequelize": "^6.21.3",
     "tron-create-address": "^0.1.10",
     "tronweb": "^4.4.0",
