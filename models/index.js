@@ -15,6 +15,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: 'mysql',
+    sync: true,
   }
 );
 
@@ -37,6 +38,8 @@ Object.keys(db).forEach((modelName) => {
     db[modelName].associate(db);
   }
 });
+
+sequelize.sync();
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

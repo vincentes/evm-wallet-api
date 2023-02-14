@@ -24,7 +24,12 @@ db.sequelize.define(
     },
     TokenName: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    IsMultiToken: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: true,
     },
     Seed: {
       type: DataTypes.STRING,

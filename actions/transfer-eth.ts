@@ -1,44 +1,50 @@
-import { Network, NetworkId, TokenType } from "../constants/constants";
-import { Priority } from "../enum/priority";
-import db from "../src/wallet/models";
-import { decryptPK } from "../utils/encrypt";
-import { getPreferredGasPriceWei } from "../utils/gas";
-import { getConfiguredWallet, isConfiguredWallet } from "../utils/storage";
-import { transform } from "../utils/transform";
-import { getWeb3 } from "./eth/init";
-
+import { Network, NetworkId, TokenType } from '../constants/constants';
+import { Priority } from '../enum/priority';
+import db from '../src/wallet/models';
+import { decryptPK } from '../utils/encrypt';
+import { getPreferredGasPriceWei } from '../utils/gas';
+import { getConfiguredWallet, isConfiguredWallet } from '../utils/storage';
+import { transform } from '../utils/transform';
+import { getWeb3 } from './eth/init';
 
 const minABI: any = [
   {
     constant: false,
     inputs: [
       {
-        name: "_to",
-        type: "address"
+        name: '_to',
+        type: 'address',
       },
       {
-        name: "_value",
-        type: "uint256"
-      }
+        name: '_value',
+        type: 'uint256',
+      },
     ],
-    name: "transfer",
+    name: 'transfer',
     outputs: [
       {
-        name: "",
-        type: "bool"
-      }
+        name: '',
+        type: 'bool',
+      },
     ],
     payable: false,
-    stateMutability: "nonpayable",
-    type: "function"
-  }
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ];
 
-
-export async function transferNative(userId: string, network: Network, tokenType: TokenType, fromAddress: string, targetAddress: string, amount: string, priority: Priority) {
+export async function transferNative(
+  userId: string,
+  network: Network,
+  tokenType: TokenType,
+  fromAddress: string,
+  targetAddress: string,
+  amount: string,
+  priority: Priority
+) {
   const web3 = getWeb3(network);
   let tokenAddress;
-  console.log("Network", NetworkId[network]);
+  console.log('Network', NetworkId[network]);
   try {
     tokenAddress = transform(network, tokenType);
   } catch (error) {
@@ -48,12 +54,11 @@ export async function transferNative(userId: string, network: Network, tokenType
   let wallet = await db.sequelize.models.Wallet.findOne({
     where: {
       Network: network,
-      TokenName: tokenType,
-      Address: fromAddress
-    }
+      Address: fromAddress,
+    },
   });
 
-  console.log("Wallet", wallet)
+  console.log('Wallet', wallet);
 
   let configured = false;
   if (!wallet) {
@@ -61,7 +66,7 @@ export async function transferNative(userId: string, network: Network, tokenType
       wallet = getConfiguredWallet(fromAddress);
       configured = true;
     } else {
-      throw new Error("Transfer - UHW not found.");
+      throw new Error('Transfer - UHW not found.');
     }
   }
 
@@ -69,12 +74,18 @@ export async function transferNative(userId: string, network: Network, tokenType
   if (configured) {
     pk = wallet.privateKey;
   } else {
-    pk = decryptPK(wallet.UserID, tokenType, network, fromAddress, wallet.dataValues["PrivateKey"]);
+    pk = decryptPK(
+      wallet.UserID,
+      tokenType,
+      network,
+      fromAddress,
+      wallet.dataValues['PrivateKey']
+    );
   }
 
   const nonce = await web3.eth.getTransactionCount(
     configured ? wallet.address : wallet.Address,
-    "latest"
+    'latest'
   );
 
   const gasPrice = await getPreferredGasPriceWei(network, tokenType, priority);
@@ -84,36 +95,39 @@ export async function transferNative(userId: string, network: Network, tokenType
     tx = {
       to: targetAddress,
       value: amount,
-      gasPrice: web3.utils.toWei("5", "gwei"),
+      gasPrice: web3.utils.toWei('5', 'gwei'),
       gas: '22000',
       nonce: nonce,
       from: fromAddress,
       chainId: 56,
-      type: "0x0"
+      type: '0x0',
     };
   } else {
     tx = {
       to: targetAddress,
       value: amount,
-      gasLimit: web3.utils.toHex("21000"),
-      maxPriorityFeePerGas: web3.utils.toWei("5", "gwei"),
+      gasLimit: web3.utils.toHex('21000'),
+      maxPriorityFeePerGas: web3.utils.toWei('5', 'gwei'),
       maxFeePerGas: gasPrice,
       nonce: nonce,
-      from: fromAddress
+      from: fromAddress,
     };
   }
-
-
-  console.log("tx", tx);
-  console.log("gas", gasPrice.toString());
-  console.log("pk", pk);
 
   let signedTx = await web3.eth.accounts.signTransaction(tx, pk);
   let execution = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
   return execution.transactionHash;
 }
 
-export async function transfer(userId: string, network: Network, tokenType: TokenType, fromAddress: string, targetAddress: string, amount: string, priority: Priority) {
+export async function transfer(
+  userId: string,
+  network: Network,
+  tokenType: TokenType,
+  fromAddress: string,
+  targetAddress: string,
+  amount: string,
+  priority: Priority
+) {
   const web3 = getWeb3(network);
   let tokenAddress;
   try {
@@ -122,13 +136,11 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
     return 0;
   }
 
-
   let wallet = await db.sequelize.models.Wallet.findOne({
     where: {
       Network: network,
-      TokenName: tokenType,
-      Address: fromAddress
-    }
+      Address: fromAddress,
+    },
   });
 
   let configured = false;
@@ -137,7 +149,7 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
       wallet = getConfiguredWallet(fromAddress);
       configured = true;
     } else {
-      throw new Error("Transfer - UHW not found.");
+      throw new Error('Transfer - UHW not found.');
     }
   }
 
@@ -145,7 +157,24 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
   if (configured) {
     pk = wallet.privateKey;
   } else {
-    pk = decryptPK(wallet.UserID, tokenType, network, fromAddress, wallet.dataValues["PrivateKey"]);
+    if (wallet.IsMultiToken) {
+      console.log('Transfer ETH - Wallet is MultiToken');
+      pk = decryptPK(
+        wallet.UserID,
+        null,
+        wallet.Network,
+        fromAddress,
+        wallet.dataValues['PrivateKey']
+      );
+    } else {
+      pk = decryptPK(
+        wallet.UserID,
+        wallet.TokenName,
+        wallet.Network,
+        fromAddress,
+        wallet.dataValues['PrivateKey']
+      );
+    }
   }
 
   const contract = new web3.eth.Contract(minABI, tokenAddress);
@@ -157,7 +186,7 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
   try {
     gas = await tx.estimateGas({ from: account.address });
   } catch (error) {
-    throw new Error("Not enough funds in the source wallet.");
+    throw new Error('Not enough funds in the source wallet.');
   }
 
   const gasPrice = await getPreferredGasPriceWei(network, tokenType, priority);
@@ -167,7 +196,7 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
     data,
     gas,
     gasPrice,
-    chainId: NetworkId[network]
+    chainId: NetworkId[network],
   };
 
   const signed = await web3.eth.accounts.signTransaction(options, pk);
@@ -178,5 +207,3 @@ export async function transfer(userId: string, network: Network, tokenType: Toke
 
   return null;
 }
-
-
