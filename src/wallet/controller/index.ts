@@ -1,13 +1,18 @@
-import { Response } from "express";
-import { getBalance } from "../../../actions/get-balance";
-import { isSupportedNetwork, isSupportedToken } from "../../../utils/transform";
-import { TronHotWallet } from "../../../actions/wallet-create-tron";
-import { UserHotWallet } from "../../../lib/uhw";
-import { getWalletInfo } from "../../../actions/wallet-info";
-import { reportError } from "../../../utils/error";
-import { exists, isValidAddress } from "../../../utils/wallet";
-import { getConfiguredWallet, isConfiguredWallet, isConfiguredWalletFor, isInvalidConfig } from "../../../utils/storage";
-var bip39 = require('bip39')
+import { Response } from 'express';
+import { getBalance } from '../../../actions/get-balance';
+import { isSupportedNetwork, isSupportedToken } from '../../../utils/transform';
+import { TronHotWallet } from '../../../actions/wallet-create-tron';
+import { UserHotWallet } from '../../../lib/uhw';
+import { getWalletInfo } from '../../../actions/wallet-info';
+import { reportError } from '../../../utils/error';
+import { exists, isValidAddress } from '../../../utils/wallet';
+import {
+  getConfiguredWallet,
+  isConfiguredWallet,
+  isConfiguredWalletFor,
+  isInvalidConfig,
+} from '../../../utils/storage';
+var bip39 = require('bip39');
 
 const thw = new TronHotWallet();
 const uhw = new UserHotWallet();
@@ -18,13 +23,16 @@ export const wallet = async (res: Response, parameters: any) => {
 
   if (!isSupportedNetwork(Network)) {
     return res.status(400).json({
-      Error: "Invalid Network"
+      Error: 'Invalid Network',
     });
   }
 
+  /**
+   * Wallet info
+   */
   if (Address) {
     if (isInvalidConfig(Address, Network, TokenName)) {
-      return res.status(422).json({ msg: "Verification failed." });
+      return res.status(422).json({ msg: 'Verification failed.' });
     }
 
     if (isConfiguredWalletFor(Address, Network, TokenName)) {
@@ -33,7 +41,7 @@ export const wallet = async (res: Response, parameters: any) => {
         Address,
         Network,
         TokenName,
-        PrivateKey: wallet.privateKey
+        PrivateKey: wallet.privateKey,
       });
     }
 
@@ -44,28 +52,31 @@ export const wallet = async (res: Response, parameters: any) => {
         const wallet = await getWalletInfo(UserID, TokenName, Network, Address);
         return res.status(200).json(wallet);
       } catch (error) {
-        return res.status(422).json({ msg: "Verification failed." });
+        return res.status(422).json({ msg: 'Verification failed.' });
       }
     }
 
-    return res.status(422).json({ msg: "Address is not a User Hot Wallet" });
+    return res.status(422).json({ msg: 'Address is not a User Hot Wallet' });
   }
 
   let address: string;
   let privKey: string;
   let seed: string;
+  /**
+   * Wallet creation
+   */
   if (Network === 'TRC20') {
-    const wallet: any = await thw.generateHotWallet(
-      {
-        UserID,
-        Network,
-        TokenName
-      });
+    const wallet: any = await thw.generateHotWallet({
+      UserID,
+      Network,
+      TokenName,
+    });
     address = wallet.address;
     privKey = wallet.privateKey;
     seed = wallet.seed;
   } else {
-    const mnemonic = bip39.generateMnemonic()
+    const mnemonic = bip39.generateMnemonic();
+    console.log('generating...');
     const wallet: any = await uhw.generateHotWallet({
       UserID,
       Network,
@@ -88,20 +99,18 @@ export const wallet = async (res: Response, parameters: any) => {
   });
 };
 
-
-
 export const balance = async (res: Response, parameters: any) => {
   const { Data } = parameters;
   const { TokenName, Network, Address } = Data;
   if (!isSupportedNetwork(Network)) {
     return res.status(400).json({
-      Error: "Invalid Network"
+      Error: 'Invalid Network',
     });
   }
 
   if (!isSupportedToken(Network, TokenName)) {
     return res.status(400).json({
-      Error: "Invalid Token"
+      Error: 'Invalid Token',
     });
   }
 
@@ -110,7 +119,7 @@ export const balance = async (res: Response, parameters: any) => {
     TokenName,
     Network,
     Address,
-    Balance: balance
+    Balance: balance,
   });
 };
 
@@ -119,12 +128,12 @@ export const info = async (res: Response, parameters: any) => {
   const { TokenName, Network, Address } = Data;
   try {
     if (!isValidAddress(Address, Network)) {
-      return res.status(422).json({ msg: "Invalid Address" });
+      return res.status(422).json({ msg: 'Invalid Address' });
     }
 
     const uhwExists = await exists(Address, Network);
     if (!uhwExists) {
-      return res.status(422).json({ msg: "Address is not a User Hot Wallet" })
+      return res.status(422).json({ msg: 'Address is not a User Hot Wallet' });
     }
 
     const wallet = await getWalletInfo(UserID, TokenName, Network, Address);
@@ -132,13 +141,13 @@ export const info = async (res: Response, parameters: any) => {
   } catch (error) {
     reportError(error);
     return res.status(502).json({
-      msg: "Invalid Params"
+      msg: 'Invalid Params',
     });
   }
-}
+};
 
 export default {
   balance,
   wallet,
-  info
-}
+  info,
+};
