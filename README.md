@@ -6,7 +6,7 @@ npm i
 ```
 
 ## Server installation
-SSL into the server and execute the following commands.
+SSH into the server and execute the following commands.
 
 ### MySQL installation
 ```bash
@@ -26,5 +26,5 @@ npm install pm2@latest -g
 ```
 
 ```bash
-pm2 start npm --name "appro-wallet" -- run prod
+pm2 start npm --name "evm-wallet-api" -- run dev
 ```
