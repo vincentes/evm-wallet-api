@@ -1,4 +1,4 @@
-# appro-wallet
+# evm-wallet-api
 
 API for creating wallets.
 ```bash
